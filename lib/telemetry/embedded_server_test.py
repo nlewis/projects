@@ -1,23 +1,30 @@
 #!/usr/bin/python -B
 
-import threading
 import time
 
+from google.apputils import app
+from projects.lib.base import logging
+from projects.lib.concurrency import threadlib
 from projects.lib.telemetry import embedded_server
 
 
-class SleepThread(threading.Thread):
+class SleepThread(threadlib.Thread):
   def run(self):
+#    logging.info('SleepThread running')
     time.sleep(999)
 
 
-def main():
+def main(unused_argv):
   sleeper = SleepThread()
   sleeper.daemon = True
   sleeper.start()
 
-  embedded_server.ServeForever()
+  telemetry_server = embedded_server.TelemetryServer()
+  telemetry_server.start()
+
+  time.sleep(10)
+  telemetry_server.Shutdown()
 
 
 if __name__ == '__main__':
-  main()
+  app.run()

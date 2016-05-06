@@ -4,6 +4,7 @@ import threading
 import traceback
 import wsgiref.simple_server
 
+from projects.lib.base import logging
 from projects.lib.concurrency import threadlib
 from projects.lib.telemetry import default_variables
 from projects.lib.telemetry.internalz import handlers
@@ -29,7 +30,6 @@ def TelemetryHandler(environ, start_response):
   try:
     response = handler(environ, start_response)
   except Exception as e:
-    print 'Exception!'
     response = handlers.HandleError(environ, start_response)
 
   for line in response:
@@ -51,6 +51,7 @@ class TelemetryServer(threadlib.Thread):
     if port is None:
       port = FLAGS.telemetry_port
 
+    logging.info('TelemetryServer listening on port %d', port)
     self.server = wsgiref.simple_server.make_server('', port, TelemetryHandler)
     self.server.serve_forever(poll_interval=0.5)
 

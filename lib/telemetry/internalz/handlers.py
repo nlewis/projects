@@ -1,6 +1,7 @@
 import threading
 import traceback
 
+from projects.lib.base import logging
 from projects.lib.telemetry.internalz import flagz
 from projects.lib.telemetry.internalz import modulez
 from projects.lib.telemetry.internalz import pygcz
@@ -25,6 +26,8 @@ _DEFAULT_HANDLERS = {
 def RegisterHandler(path, handler):
   with _HANDLERS_LOCK:
     _HANDLERS[path] = handler
+  logging.info('Registered %s.%s for %s',
+               handler.__module__, handler.__name__, path)
 
 
 def GetHandler(path):
